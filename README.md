@@ -1,0 +1,1 @@
+This CSS Validator is capeable of showing descriptive errors if different versions of syntax for Browsers Compatability
