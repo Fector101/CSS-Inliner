@@ -18,6 +18,25 @@ def removeAllFromList(input:str,list_:list):
         else:
             output=output.replace(each,'')
     return output
+def removeComments(code):
+    if '/*' not in code:
+        return code
+    new_str=''
+    found_comment_end=True
+    i = 0
+    for char in code:
+        if char == '/' and i+1 != len(code) and code[i+1] == '*':
+            found_comment_end = False
+        elif (char == '*' and i+1 != len(code) and code[i+1] == '/') or (char == '/' and i-1 != 0 and code[i-1] == '*'):
+            found_comment_end=True
+        elif found_comment_end:
+            new_str+=char
+        i+=1
+    list_for_empty_return=['/','*','{']
+    if any(i.replace(' ','') == new_str for i in list_for_empty_return):
+        return ''
+    else:
+        return new_str
 
 def removeWhiteSpaces():
     remove_whitespaces=CODE.replace('\n','')#.replace('\n','')
@@ -25,35 +44,18 @@ def removeWhiteSpaces():
     with open('ouput/without_whitespace/style.css',mode='w')as file:
         file.write('')
     list_of_styles=[]
-    # print(remove_whitespaces)
-    for style_section in remove_whitespaces.split('}')[0:-1]:
-        print(style_section)
-        if style_section.replace(' ',unique_char_4_space) != unique_char_4_space:
-            if '/*' in style_section:
-                # print('|||',style_section)
-                new_str=''
-                found_comment_end=True
-                # if style_section.count('/*') != style_section.count('*/'): #Checking if commented correctly
-                #     print('Comments not formatted correctly')
-                #     return
-                i = 0
-                for char in style_section:
-                    if char == '/' and i+1 != len(style_section) and style_section[i+1] == '*':
-                        found_comment_end = False
-                    elif (char == '*' and i+1 != len(style_section) and style_section[i+1] == '/') or (char == '/' and i-1 != 0 and style_section[i-1] == '*'):
-                        found_comment_end=True
-                    elif found_comment_end:
-                        new_str+=char
-                    i+=1
-                style_section=new_str
-            # print(style_section)
-            # else:
-            formatted=style_section
-            if formatted !='':
-                formatted=formatted+'}'
-            formatted=removeAllFromList(formatted,[''])
+    i=0
+    style_sections=removeComments(remove_whitespaces).split('}')
+    for style_section in style_sections:#remove_whitespaces.split('}')[0:-1]:
+        if i+1==len(style_sections) and style_section =='':
+            pass
+        else:
+            style_section=removeComments(style_section)
+            formatted=style_section+'}'
+            print('|||',formatted)
             list_of_styles.append(formatted)
-    # print(list_of_styles)
+        i+=1
+
     for style_section in list_of_styles:
         with open('ouput/without_whitespace/style.css',mode='a')as file:
             file.write(style_section)
@@ -64,3 +66,19 @@ removeWhiteSpaces()
 # for each in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16][0:-1:2]:
 #     print(each)
 # print('pw/*pwk/*')
+ # if '/*' in style_section:
+            #     new_str=''
+            #     found_comment_end=True
+            #     # if style_section.count('/*') != style_section.count('*/'): #Checking if commented correctly
+            #     #     print('Comments not formatted correctly')
+            #     #     return
+            #     i = 0
+            #     for char in style_section:
+            #         if char == '/' and i+1 != len(style_section) and style_section[i+1] == '*':
+            #             found_comment_end = False
+            #         elif (char == '*' and i+1 != len(style_section) and style_section[i+1] == '/') or (char == '/' and i-1 != 0 and style_section[i-1] == '*'):
+            #             found_comment_end=True
+            #         elif found_comment_end:
+            #             new_str+=char
+            #         i+=1
+            #     style_section=new_str
