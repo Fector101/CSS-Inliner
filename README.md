@@ -1,1 +1,4 @@
-This CSS Validator is capeable of showing descriptive errors if different versions of syntax for Browsers Compatability
+This CSS Validator is capable of showing descriptive errors if different versions of syntax for Browsers Compatability
+# Features
+* Shows descriptive errors
+* Adds different versions of syntax for Browsers Compatability
