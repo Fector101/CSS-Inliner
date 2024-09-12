@@ -194,15 +194,49 @@ def stylesToObject(code:str):
     #     list_of_styles.append(each)
     # print(list_of_styles)
 # stylesToObject(CODE)
+runtime=300
 def removeEmptySelectors(code:str):
-    styles_obj=stylesToObject(code)
     style=''
-    for key, value in styles_obj.items():
-        # style+=key+{
-        print(key,'||',value)
+    # def extract(str_or_obj):
+    #     value=''
+    #     type()
+    #     # for key, value in styles_obj.items():
+
+    #     return value
+    styles_obj=stylesToObject(code)
+    # print(styles_obj)
+    # return
+    i=0
+    for selector, value in styles_obj.items():
+        style+= selector + '{'
+        value__ = value
+        if type(value) == dict:  
+            # while type(value__) == dict and i<runtime:
+            for a_style, value in value__.items():
+                # print(a_style, value)
+                value__=value
+                if type(value) == str:
+                    style+= a_style + ':'+value+';'
+                elif type(value) == dict: # it the value is a object then the key is a selector (i.e a_style var is a selector)
+                        # style+='}'# incase there are stykes in the parent style before the child selector
+                    style+=a_style+'{'
+                    for sty, val in value__.items():
+                        style+=sty+':'+val+';'
+                    style+='}'
+            style+='}'
+            # i+=1
+
+            # style+=
+
+        # style+='}'
+    writeInFile(style)
+    #     # style+=key+{
+    #     print(key,'||',value)
         
-        for e,e1 in value.items():
-            print(e,e1)
+    #     for e,e1 in value.items():
+    #         print(e,'--',e1)
+    #         for e,e1 in e1.items():
+    #             print(e,'--',e1)
 
 removeEmptySelectors(CODE)
 # print(';'.join("color: red; display: flex; h1".split(';')[0:-1]))
