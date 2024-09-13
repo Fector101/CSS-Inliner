@@ -1,7 +1,16 @@
-# ADD ability to remove empty selectors (style_section)
+# Make objectToStyle add comment
+    # 'body':{
+    #         'color': 'red',
+    #         'comment'+unique_char_4_space: '   THE COMMENT '
+    #     }
+    # 'comment':{+unique_char_4_space: '   THE COMMENT '}
+    # 'h1':{
+    #         'color': 'red',
+    #         'comment'+unique_char_4_space: '   THE COMMENT '
+    #     }
 
 unique_char_4_space="defiohf;qebio;gofhwe9-fpweffopefo"
-with open('input/small.css', mode='r') as data:
+with open('input/rough.css', mode='r') as data:
     file_code=data.read()
     CODE=file_code
     # print(CODE.count('\n'))
@@ -43,6 +52,7 @@ def writeInFile(str_=''):
     with open('ouput/without_whitespace/style.css',mode='w')as file:
         file.write(str_)
 def myStrip(code:str):
+    """Removes unnesseccary white space and empty selectors. (div{})"""
     new_str=''
     i=0
     remove_space=False
@@ -59,7 +69,16 @@ def myStrip(code:str):
             remove_space=True
             if char=='{':
                 new_str=new_str.rstrip() #removing space between h1 above open curlly braces e.g "h1 {"
-            new_str+=char
+                new_str+=char
+            elif char == '}' and new_str[-1]=='{': 
+                # Removes empty selectors
+                index_of_last_closed_braces = new_str.rfind('}')
+                if index_of_last_closed_braces != -1:
+                    new_str=new_str[0:index_of_last_closed_braces+1]
+                else:
+                    new_str+=char
+            else:
+                new_str+=char
         elif (char == '/' and i+1 != lenght_of_str and code[i+1] == '*') or (char == '*' and i-1 != 0 and code[i-1] == '/'):#/*
             # print(char, code[i+1], code[i+2], code[i+3], code[i+4], code[i+5], code[i+6], code[i+7], code[i+8], code[i+9], code[i+10], code[i+11], code[i+12])
             new_str+=char
@@ -79,17 +98,18 @@ def myStrip(code:str):
         i+=1
     return new_str
 
-def removeWhiteSpaces():
-    no_comments=removeComments(CODE)    # Doesn't make sense to have comments when no whitespaces it won't be visible
-    #ADD Function to remove empty selectors (style_section)
+def removeWhiteSpaces(code,return_=False,comments=False):
+    no_comments=code
+    if not comments:
+        no_comments=removeComments(CODE)    # Doesn't make sense to have comments when no whitespaces it won't be visible
     no_whitespaces=myStrip(no_comments)
-
+    if return_:
+        return no_whitespaces
     with open('ouput/without_whitespace/style.css','w')as file:
         file.write(no_whitespaces)
 
-# removeWhiteSpaces()
 def stylesToObject(code:str):
-    """Works when comments are removed withy myStrip
+    """Works when comments are removed with myStrip
     and semi-column added when a selector has another selector within
     """
     code_=myStrip(code)
@@ -114,7 +134,6 @@ def stylesToObject(code:str):
     #     style_des_name=''
     #     style_des_value=''
     #     selector=''
-    all=''
     for char in code_:
         # print(found_end,found_a_style_name_end,found_a_style_name_start,found_a_style_value_start)
         # if found_end == True and char == '{':
@@ -193,24 +212,17 @@ def stylesToObject(code:str):
     # for each in styles.values():
     #     list_of_styles.append(each)
     # print(list_of_styles)
-# stylesToObject(CODE)
 runtime=300
-def removeEmptySelectors(code:str):
+def objectToStyle(code:dict):
     style=''
-    # def extract(str_or_obj):
-    #     value=''
-    #     type()
-    #     # for key, value in styles_obj.items():
-
-    #     return value
-    styles_obj=stylesToObject(code)
-    # print(styles_obj)
-    # return
-    i=0
+    styles_obj=code
+    # i=0
     for selector, value in styles_obj.items():
-        style+= selector + '{'
         value__ = value
-        if type(value) == dict:  
+        if bool(value) == False:
+            pass
+        elif type(value) == dict:  
+            style+= selector + '{'
             # while type(value__) == dict and i<runtime:
             for a_style, value in value__.items():
                 # print(a_style, value)
@@ -225,44 +237,36 @@ def removeEmptySelectors(code:str):
                     style+='}'
             style+='}'
             # i+=1
-
-            # style+=
-
-        # style+='}'
     writeInFile(style)
-    #     # style+=key+{
-    #     print(key,'||',value)
-        
-    #     for e,e1 in value.items():
-    #         print(e,'--',e1)
-    #         for e,e1 in e1.items():
-    #             print(e,'--',e1)
+    return style
+# objectToStyle(stylesToObject(CODE))
 
-removeEmptySelectors(CODE)
-# print(';'.join("color: red; display: flex; h1".split(';')[0:-1]))
-# print(';'.join("color: red display: flex h1".split(';')[0:-1]))
 
-# d={'rr':'aa','gg':'bb','ff':'cc'}
-# print('\n')
-# for e in d.values():
-#     print(e)
-# p='o'
-# print(p!=';' and p!='{')
 def formatNicely(code):
     """Also removes empty empty selectors :) just a feature code runs 100% without it"""
-    # new_str=CODE.replace('\n','').replace(';',';\n').replace('}','}\n')
-    # writeInFile(removeComments(new_str))
     new_str=myStrip(code)
-    # new_str=CODE.replace('{','{\r')#
     str_=''
     lenght_of_str = len(new_str)
     i=0
+    # is_a_sub_selector=False
+    # in_comment=False
+    # amount_of_open_braces=0
+    # amount_of_closed_braces=0
     for char in new_str:
-        if (char == '*' and i+1 != lenght_of_str and new_str[i+1] == '/') or (char == '/' and i-1 != 0 and new_str[i-1] == '*'):
+        # print(is_a_sub_selector)
+
+        if (char == '*' and i+1 != lenght_of_str and new_str[i+1] == '/') or (char == '/' and i-1 != 0 and new_str[i-1] == '*'):# this identifies comments
+            # if (char == '*' and i+1 != lenght_of_str and new_str[i+1] == '/'):
+            #     in_comment=True
+            # elif (char == '/' and i-1 != 0 and new_str[i-1] == '*'):
+            #     in_comment =False
+                
             if char == '/':
                 str_+=char+'\n\t'
+                # in_comment =False
             else:
                 str_+=char
+                # in_comment=True
         elif char=='}':
             # print(len(new_str))
             if i>2 and new_str[i-1]=='/' and new_str[i-2] =='*':
@@ -271,34 +275,85 @@ def formatNicely(code):
                 # print(999)
                 # str_+=char+'\n'
             else:
+                # if is_a_sub_selector:
+                #     str_+='\n\t'+char+'\n\t'
+                # else:
                 str_+='\n'+char+'\n'
-        elif str_ and any(str_[-1] == i for i in ['{',';']):
+        elif str_ and any(str_[-1] == i for i in ['{',';']): #if last char before this was ; or }
+            # print('buzz')
+            # if is_a_sub_selector:
+            #     if str_[-1] == '{':
+            #         str_+='\n\t\t'+char
+            #     elif str_[-1] == ';':
+            #         str_+='\n\t\t\t'+char
+            # else:
             str_+='\n\t'+char
             # print(str_)
         else:
             str_+=char
+
+        # if not in_comment:
+        #     if char=='{':
+        #         if amount_of_open_braces>amount_of_closed_braces:
+        #             is_a_sub_selector=True
+        #         elif amount_of_open_braces==amount_of_closed_braces:
+        #             is_a_sub_selector=False
+        #         amount_of_open_braces+=1
+        #     elif char =='}':
+        #         amount_of_closed_braces+=1
+        #         if amount_of_open_braces==amount_of_closed_braces:
+        #             is_a_sub_selector=False
+                # if char=='}' and new_str[i+1]=='@':
+                #     print(amount_of_open_braces,amount_of_closed_braces)
+
+        # if char=='k' and str_[-2]=='@':
+        #     if amount_of_open_braces>amount_of_closed_braces:
+        #         # print(str_)
+        #         print(is_a_sub_selector)
+            # print(amount_of_open_braces,amount_of_closed_braces)
+            # break
+            
         i+=1
-    # new_str=str_.replace('}','}\n').replace('{','{\n').replace('*/','*/\n').replace(';',';\n')#.replace(';',';\n')
-    # new_str=str_#.replace('}','}\n')#.replace(';',';\n')#.replace(';',';\n')
-    # new_str=str_.replace('}','}\n').replace('{','{\n')#.replace(';',';\n')#.replace(';',';\n')
-
+    # print(amount_of_open_braces,amount_of_closed_braces)
     writeInFile(str_)#[1:-1]
-
-# formatNicely(CODE)
-# print('poph'[0:-1])
-#  if found_end and char == '}' : # if statement so it can come here if last written style does not have ";" and it's captured by `(char == ';' or (char == '}'))`
-#             # if statment so current selector and values don't eraser if it's an animations or selctor with parent selector
-#             # print(found_end)
-#             if char=='}'and'{' in style_des_value and (style_des_value.count('{') != style_des_value.count('}')):  # for animations and selctor with parent selector
-#                 # print(33,style_des_value)
-#                 all+=char
-#                 #(style_des_value.count('{') != style_des_value.count('}')) checks if done with the child selectors
-#                 style_des_value+='}'
-#                 # found_animation=True
-#                 pass
-#             elif char=='}' and '{' in style_des_value and (style_des_value.count('{') == style_des_value.count('}')):  # for animations and selctor with parent selector
-#                 print(888)
-#                 styles[selector][style_des_name]=style_des_value
-#                 start4newSelector()
+# def formatNicelyPro(code):
+#     code_=removeWhiteSpaces(CODE,return_=True,comments=True)
+#     str_=''
+#     i=0
+#     for char in code_:
+#         if char == '{' or char==';':
+#             if code_[i+1]  =='}':
+#                 str_+=char+'\n'
 #             else:
-#                 start4newSelector()
+#                 str_+=char+'\n\t'
+#         elif char=='}':
+#             str_+=char+'\n\n'
+#         else:
+#             str_+=char
+#         i+=1
+#     writeInFile(str_)
+# formatNicelyPro(CODE)
+# print('fabi')
+# print('||','fabiom'[0:3])#.rfind('io'))
+    # style=''
+    # styles_obj=stylesToObject(code)
+    # # i=0
+    # for selector, value in styles_obj.items():
+    #     value__ = value
+    #     if bool(value) == False:
+    #         pass
+    #     elif type(value) == dict:  
+    #         style+= selector + '{'
+    #         for a_style, value in value__.items():
+    #             value__=value
+    #             if type(value) == str:
+    #                 style+= a_style + ':'+value+';'
+    #             elif type(value) == dict: 
+    #                 style+=a_style+'{'
+    #                 for sty, val in value__.items():
+    #                     style+=sty+':'+val+';'
+    #                 style+='}'
+    #         style+='}'
+    #         # i+=1
+    # writeInFile(style)
+    # return style
