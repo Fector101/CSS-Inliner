@@ -1,5 +1,5 @@
-This CSS Validator is capable of showing descriptive errors if different versions of syntax for Browsers Compatability
+Capable of changing external CSS to inline-styles for purpose of EMAIL HTML
 # Features
-* Shows descriptive errors
-* Adds different versions of syntax for Browsers Compatability
-* Can Change external styles to inline-style
+* Changes external styles to inline-style.
+* Can remove All white-spaces and comments.
+* Can fix CSS code [beta]
