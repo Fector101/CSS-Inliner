@@ -1,49 +1,19 @@
+/* Loading */
 body {
-    color: var(--bod-color);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
     height: calc(100vh - 1px);
     background-color: #212121fd;
     margin: 0;
     /* font-family: "myFont", var(--bod-font); */
-
-    font-family: var(--bod-font);
-}
-
-@font-face {
+  }
+  
+  @font-face {
     font-family: "myFont";
     src: url("suckle.otf");
     /* src: url("../../museo-cufonfonts/Museo300-Regular.otf"); */
-}
-
-.PPfocus {
-    background-color: grey;
-}
-
-.search-hl {
-    background-color: rgba(135, 130, 130, 0.231);
-    background: rgba(255, 255, 255, 0.2)
-}
-
-@-webkit-keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-    }
-
-    100% {
-        -webkit-transform: rotate(360deg);
-    }
-
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-
-}
+  }
+  /* Loading */
+  .loader {
+    position: absolute;
+    left: 50%;
+  }
+  
