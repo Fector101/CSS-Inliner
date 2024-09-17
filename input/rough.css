@@ -512,6 +512,7 @@ body {
     width: 30px;
   }
   .search-box:has(input:focus) {
+    color:red;
     .search-btn svg {
       height: 13px;
     }

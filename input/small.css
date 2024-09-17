@@ -1,4 +1,4 @@
-/* Loading */
+/* Body */
 body {
     height: calc(100vh - 1px);
     background-color: #212121fd;
@@ -14,6 +14,34 @@ body {
   /* Loading */
   .loader {
     position: absolute;
-    left: 50%;
+    left: 50%
   }
+  .case button{
+    /* background-color: #524e4e80 !important; */
+    width: 30px;
+  }
+  .search-box:has(input:focus) {
+    color:#000;
+     .search-btn svg {
+      height: 13px;
+    }
+  
+    .search-input::placeholder {
+      font-size: 13px;
+    }
+  
+    .search-input {
+      border: 2px inset rgba(0, 0, 0, 0.397);
+    }
+  }
+  
+  .search-box input::placeholder {
+    color: rgb(230, 228, 228);
+    padding-top: 1px;
+  }
+  
+  input {
+    border: none;
+  }
+
   

@@ -1,14 +1,5 @@
-# Make objectToStyle add comment
-    # 'body':{
-    #         'color': 'red',
-    #         'comment'+unique_char_4_space: '   THE COMMENT '
-    #     }
-    # 'comment':{+unique_char_4_space: '   THE COMMENT '}
-    # 'h1':{
-    #         'color': 'red',
-    #         'comment'+unique_char_4_space: '   THE COMMENT '
-    #     }
-
+# Need to add a kind of while loop for Parent with childern and childern that also have childern and ...
+# Make sytnax better
 unique_char_4_space="defiohf;qebio;gofhwe9-fpweffopefo"
 with open('input/small.css', mode='r') as data:
     file_code=data.read()
@@ -26,6 +17,7 @@ def replaceAllFromList(input:str,list_:list,char_to_replace_with:str):
         else:
             output=output.replace(each,char_to_replace_with)
     return output
+
 def removeComments(code:str):
     if '/*' not in code:
         return code
@@ -38,7 +30,7 @@ def removeComments(code:str):
     for char in code:
         if char == '/' and i+1 != len(code) and code[i+1] == '*':
             found_comment_end = False
-        elif (char == '*' and i+1 != len(code) and code[i+1] == '/') or (char == '/' and i-1 != 0 and code[i-1] == '*'):
+        elif (char == '*' and i+1 != len(code) and code[i+1] == '/') or (char == '/' and i-1 != -1 and code[i-1] == '*'):
             found_comment_end=True
         elif found_comment_end:
             new_str+=char
@@ -67,8 +59,10 @@ def myStrip(code:str):
     for char in code:
         if any(i == char for i in checkpoints):
             remove_space=True
+            new_str=new_str.rstrip() 
+            #removing space between h1 above open curlly braces e.g "h1 {"
+            # OR trailing whitespace when used doesn't add ';' after style (width: 10px  /* background-color: transparent;) */
             if char=='{':
-                new_str=new_str.rstrip() #removing space between h1 above open curlly braces e.g "h1 {"
                 new_str+=char
             elif char == '}' and new_str[-1]=='{': 
                 # Removes empty selectors
@@ -79,12 +73,14 @@ def myStrip(code:str):
                     new_str+=char
             else:
                 new_str+=char
-        elif (char == '/' and i+1 != lenght_of_str and code[i+1] == '*') or (char == '*' and i-1 != 0 and code[i-1] == '/'):#/*
+        elif (char == '/' and i+1 != lenght_of_str and code[i+1] == '*') or (char == '*' and i-1 != -1 and code[i-1] == '/'):#/*
             # print(char, code[i+1], code[i+2], code[i+3], code[i+4], code[i+5], code[i+6], code[i+7], code[i+8], code[i+9], code[i+10], code[i+11], code[i+12])
+            new_str=new_str.rstrip()
+            # Strip trailing whitespace when used doesn't add ';' after style (width: 10px  /* background-color: transparent;) */
             new_str+=char
             remove_space=True
         # elif (char == '*' and i+1 != len(code) and code[i+1] == '/'):
-        elif (char == '*' and i+1 != lenght_of_str and code[i+1] == '/') or (char == '/' and i-1 != 0 and code[i-1] == '*'):
+        elif (char == '*' and i+1 != lenght_of_str and code[i+1] == '/') or (char == '/' and i-1 != -1 and code[i-1] == '*'):
             new_str+=char
             remove_space=True
         elif char == ' ' and remove_space:
@@ -109,10 +105,7 @@ def removeWhiteSpaces(code,return_=False,comments=False):
         file.write(no_whitespaces)
 
 def stylesToObject(code:str):
-    """
-        Comments go to one line and
-        Code Works when semi-column added to last style when a selector has another selector within.
-    """
+    """Code Works when semi-column added to last style when a selector has another selector within."""
     code_=myStrip(code)
     # code_=removeComments(code_)
     
@@ -128,44 +121,81 @@ def stylesToObject(code:str):
     found_a_style_value_start=False
     i=0
     rin=0
-
-    def checkIfCommentEle(char='',i=0):
-        # print(char)
-        if not any(char == e for e in ['/','*']):
+    print(code_)
+    def inCommentStart(char='',i=0):
+        """Check if is any of the char(s) that Starts the comment"""
+        if char not in ['/','*']:
             return False
-        if (char == '/' and i+1 != len(code_) and code_[i+1] == '*')  or (char == '*' and i-1 != 0 and code_[i-1] == '/') or  (char == '*' and i+1 != len(code_) and code_[i+1] == '/')  or (char == '/' and i-1 != 0 and code_[i-1] == '*') :
+        elif (char == '/' and i+1 != len(code_) and code_[i+1] == '*')  or (char == '*' and i-1 != -1 and code_[i-1] == '/'):
             return True
         else:
             return False
-    def inCommentStart(char='',i=0):
-        """Check if is any of the char(s) that Starts the comment"""
-        if not any(char == e for e in ['/','*']):
-            return False
-        if (char == '/' and i+1 != len(code_) and code_[i+1] == '*')  or (char == '*' and i-1 != 0 and code_[i-1] == '/'):
-            return True
     def isCommentEnd(char='',i=''):
         """Check if is the last char that Ends the comment"""
         if char != '/':
             return False
-        if  char == '/' and i-1 != 0 and code_[i-1] == '*':
+        elif char == '/' and i-1 != 0 and code_[i-1] == '*':
             return True
-    print('2222222222222')
-    inComment=False
+        else:
+            return False
+    def closeASelector():
+        nonlocal new_selector,found_selector_name_end,selector,style_des_name,style_des_value
+        if new_selector:
+                new_selector=''
+        else:    
+            found_selector_name_end=False
+            selector=''
+        style_des_name=style_des_value=''
+    print('hhhhhhhhhhhhh')
+    inComment=False     #This var will be true at comment start till it sees comment end.
+    # counter_for_first_two_comment_chars=0# to avoid adding first two '/' and '*' and add others in the comment e.g --> /* /* */
     for char in code_:
         # print(char)
+        # Using this if and elif statement cause it needs to stay at true till it hits the end of the comment
         if inCommentStart(char,i):
             inComment=True
+            if style_des_name:
+                #according to tests if style_des_name var is not empty that means the style isn't close before the comment in next line
+                # i.e p{color:red\n /*comment*/}
+                found_a_style_name_end=False
+                if new_selector:    # for animations and selctor with parent selector
+                    #ADD (maybe a While loop) feature for a recuring loop of sub child selectors
+                    styles[selector][new_selector][style_des_name]=style_des_value
+                else:
+                    styles[selector][style_des_name]=style_des_value
+                style_des_name= style_des_value=''
+                # closeASelector() Don't close selector because it's about to add comment that belongs in the selector.
         elif isCommentEnd(char,i):
             inComment=False
         
+        # print(inComment,char,'||||',i)
+        # print(inCommentStart(char,i),char,'||||',i)
+        # print(style_des_value,'|||',style_des_name,'<----')
+        
         if inComment:
-            print('IN COMMENT',char)
+            style_des_value+=char
+            # if counter_for_first_two_comment_chars 
+            # print('IN COMMENT',char)
+        elif isCommentEnd(char,i):
+            # print(style_des_value,'|||',style_des_name,'<----')
+            unique_comment_name='comment'+unique_char_4_space+str(i)
+            if new_selector:
+                #ADD loop mechanism for a selector with a child that has it's own children and on and on..
+                styles[selector][new_selector][unique_comment_name]=style_des_value+'/'
+                # Don't clear new_selector
+            else:
+                if selector=='':# for if comment is not inside a selector
+                    styles[unique_comment_name]=style_des_value+'/'
+                elif selector:
+                    styles[selector][unique_comment_name]=style_des_value+'/'
+            style_des_name=style_des_value=''
         elif not found_selector_name_end and char !='{':
             selector+=char
         elif not found_selector_name_end and char == '{':
             styles[selector]={}
             found_selector_name_end=True
         elif char == '{' and found_selector_name_end:    # for animations and selctor with parent selector
+            #FIX Fails to add children selectors properly when ';' is added to last style
             # found_styles=';'.join(style_des_name.split(';')[0:-1])  #returns -->> e.g color: red; display: flex; and takes out h1
             # styles[selector][style_des_name]=found_styles
             #ADD a way to if fallback user those not close with semi-colomun before child selector
@@ -174,58 +204,37 @@ def stylesToObject(code:str):
             style_des_value=''
             style_des_name=''
             found_a_style_name_end=False
-        elif found_selector_name_end and not found_a_style_name_end and char != ':': # added (and each != ':') to move (elif found_a_style_name_start and each == ':':) section after this elif statement:
+        elif found_selector_name_end and not found_a_style_name_end and char not in [':','}']: # added (and each != ':') to move (elif found_a_style_name_start and each == ':':) section after this elif statement:
             style_des_name+=char
-            found_a_style_name_start=True   
+            found_a_style_name_start=True  
+            
         elif found_a_style_name_start and char == ':':
             found_a_style_name_end=True
         elif found_a_style_name_end and (char != ';' and char != '}'):
             style_des_value+=char
             found_a_style_value_start=True            
-        elif found_a_style_name_end and found_a_style_value_start and (char == ';' or char == '}'):#Added '}' incase last style doesn't have ';', the other vars while be true so it'll enter here
+        elif style_des_value and found_a_style_name_end and found_a_style_value_start and (char == ';' or char == '}'):
             found_a_style_name_end=False
             if new_selector:    # for animations and selctor with parent selector
                 #ADD (maybe a While loop) feature for a recuring loop of sub child selectors
                 styles[selector][new_selector][style_des_name]=style_des_value
             else:
                 styles[selector][style_des_name]=style_des_value
-            style_des_name=''
-            style_des_value=''
-        if found_selector_name_end and char == '}': 
+            style_des_name= style_des_value=''
+            if char=='}':
+                closeASelector()
+        elif found_selector_name_end and char == '}': 
             # if statement so it can come here if last written style does not have ";" and it's captured by `(char == ';' or (char == '}'))`
-            if new_selector:
-                new_selector=''
-            else:    
-                found_selector_name_end=False
-                selector=''
-            style_des_name=''
-            style_des_value=''
-        elif (char == '/' and i-1 != 0 and code_[i-1] == '*'):
-            # Leaving comment
-            style_des_name=style_des_value=''
-            found_a_style_name_start=found_a_style_name_end=False                                
+            # New comment i understand it's coming here to clear value of current selector i'm done with them.
+            closeASelector()
         else:
-            print('--------------NOT------------')
+            print(f'--------------PROBLEM with {char}------------') # Because are characters should be caught
         i+=1
     print(styles)
+    for e in styles.keys():
+          print(e)
     return styles
 # stylesToObject(CODE)
-# def test():
-#     i=0
-#     s=1
-#     d=0
-#     f=1
-#     def add():
-#         nonlocal i,s,d,f
-#         i+=1
-#         f+=1
-#         d+=1
-#         s+=1
-#     for a in range(0,10):
-#         add()
-#     print(i,s,d,f)
-
-test()
 runtime=300
 def objectToStyle(code:dict):
     style=''
@@ -237,8 +246,8 @@ def objectToStyle(code:dict):
         # print(selector)
         if 'comment' +unique_char_4_space in selector:
             # print(selector)
-            print(value)
-            style+=f'/* {value} */'
+            # print(value)
+            style+= value
         else:
             style+= selector + '{'
         # while type(value__) == dict and i<runtime:
@@ -248,7 +257,7 @@ def objectToStyle(code:dict):
                 value__=value
                 if type(value) == str:
                     if 'comment' +unique_char_4_space in a_style:
-                        style+=f'/* {value} */'
+                        style+=value
                     else:
                         style+= a_style + ':'+value+';'
                 elif type(value) == dict: # it the value is a object then the key is a selector (i.e a_style var is a selector)
@@ -296,4 +305,6 @@ def formatNicely(code, strip=True):
         i+=1
     # print(amount_of_open_braces,amount_of_closed_braces)
     writeInFile(str_)#[1:-1]
-# formatNicely(objectToStyle(stylesToObject(CODE)),strip=0)
+# formatNicely(removeWhiteSpaces(CODE,return_=True))
+formatNicely(objectToStyle(stylesToObject(CODE)),strip=0)
+#FIX
