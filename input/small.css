@@ -7,6 +7,9 @@
   
     .search-input::placeholder {
       font-size: 13px;
+      div{
+        background-attachment: fixed;
+      }
     }
   
     .search-input {
