@@ -1,5 +1,6 @@
 # Need to add a kind of while loop for Parent with childern and childern that also have childern and ...
 # Make sytnax better
+# Make formatNicely BETTER there is an indentation problem
 unique_char_4_space="defiohf;qebio;gofhwe9-fpweffopefo"
 with open('input/small.css', mode='r') as data:
     file_code=data.read()
@@ -121,7 +122,7 @@ def stylesToObject(code:str):
     found_a_style_value_start=False
     i=0
     rin=0
-    print(code_)
+    # print(code_)
     def inCommentStart(char='',i=0):
         """Check if is any of the char(s) that Starts the comment"""
         if char not in ['/','*']:
@@ -149,6 +150,9 @@ def stylesToObject(code:str):
     print('hhhhhhhhhhhhh')
     inComment=False     #This var will be true at comment start till it sees comment end.
     # counter_for_first_two_comment_chars=0# to avoid adding first two '/' and '*' and add others in the comment e.g --> /* /* */
+    children_selectors_and_their_childern=[]#a ordered list of nested selectors
+    current = {} # key
+
     for char in code_:
         # print(char)
         # Using this if and elif statement cause it needs to stay at true till it hits the end of the comment
@@ -192,22 +196,35 @@ def stylesToObject(code:str):
         elif not found_selector_name_end and char !='{':
             selector+=char
         elif not found_selector_name_end and char == '{':
+            # print(22222,styles)
             styles[selector]={}
+            current = styles[selector]
+            print(1111,current)
+            # print(333333,current,styles)
             found_selector_name_end=True
         elif char == '{' and found_selector_name_end:    # for animations and selctor with parent selector
             #FIX Fails to add children selectors properly when ';' is added to last style
             # found_styles=';'.join(style_des_name.split(';')[0:-1])  #returns -->> e.g color: red; display: flex; and takes out h1
             # styles[selector][style_des_name]=found_styles
             #ADD a way to if fallback user those not close with semi-colomun before child selector
+            print(2222,styles,'||||',current)
+            print(style_des_name)
             new_selector=style_des_name
-            styles[selector][new_selector]={}
+            # styles[selector][new_selector]={}
+            # children_selectors_and_their_childern.append(new_selector)
+            current[new_selector]={}
+            print(555555555,styles,'||||',current)
+
+            current = current[new_selector]
+            # print(styles)
             style_des_value=''
             style_des_name=''
             found_a_style_name_end=False
+            print(3333,styles)
+
         elif found_selector_name_end and not found_a_style_name_end and char not in [':','}']: # added (and each != ':') to move (elif found_a_style_name_start and each == ':':) section after this elif statement:
             style_des_name+=char
             found_a_style_name_start=True  
-            
         elif found_a_style_name_start and char == ':':
             found_a_style_name_end=True
         elif found_a_style_name_end and (char != ';' and char != '}'):
@@ -217,24 +234,31 @@ def stylesToObject(code:str):
             found_a_style_name_end=False
             if new_selector:    # for animations and selctor with parent selector
                 #ADD (maybe a While loop) feature for a recuring loop of sub child selectors
-                styles[selector][new_selector][style_des_name]=style_des_value
+                # styles[selector][new_selector][style_des_name]=
+                # styles[selector][new_selector][style_des_name]=style_des_value
+                # for sub_selector in children_selectors_and_their_childern:
+                    # styles[selector][sub_selector]
+                current[style_des_name]=style_des_value
             else:
                 styles[selector][style_des_name]=style_des_value
             style_des_name= style_des_value=''
             if char=='}':
+                # print(111111,styles)
                 closeASelector()
         elif found_selector_name_end and char == '}': 
+            # print(styles)
             # if statement so it can come here if last written style does not have ";" and it's captured by `(char == ';' or (char == '}'))`
             # New comment i understand it's coming here to clear value of current selector i'm done with them.
             closeASelector()
         else:
             print(f'--------------PROBLEM with {char}------------') # Because are characters should be caught
         i+=1
-    print(styles)
+    # print(styles)
+    # print(styles['.search-box:has(input:focus)'].keys())
     for e in styles.keys():
           print(e)
     return styles
-# stylesToObject(CODE)
+stylesToObject(CODE)
 runtime=300
 def objectToStyle(code:dict):
     style=''
@@ -306,5 +330,5 @@ def formatNicely(code, strip=True):
     # print(amount_of_open_braces,amount_of_closed_braces)
     writeInFile(str_)#[1:-1]
 # formatNicely(removeWhiteSpaces(CODE,return_=True))
-formatNicely(objectToStyle(stylesToObject(CODE)),strip=0)
+# formatNicely(objectToStyle(stylesToObject(CODE)),strip=0)
 #FIX

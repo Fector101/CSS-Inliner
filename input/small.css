@@ -1,25 +1,4 @@
 /* Body */
-body {
-    height: calc(100vh - 1px);
-    background-color: #212121fd;
-    margin: 0;
-    /* font-family: "myFont", var(--bod-font); */
-  }
-  
-  @font-face {
-    font-family: "myFont";
-    src: url("suckle.otf");
-    /* src: url("../../museo-cufonfonts/Museo300-Regular.otf"); */
-  }
-  /* Loading */
-  .loader {
-    position: absolute;
-    left: 50%
-  }
-  .case button{
-    /* background-color: #524e4e80 !important; */
-    width: 30px;
-  }
   .search-box:has(input:focus) {
     color:#000;
      .search-btn svg {
