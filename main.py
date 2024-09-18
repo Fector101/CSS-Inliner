@@ -1,6 +1,3 @@
-# Need to add a kind of while loop for Parent with childern and childern that also have childern and ...
-# Make sytnax better
-# Make formatNicely BETTER there is an indentation problem
 unique_char_4_space="defiohf;qebio;gofhwe9-fpweffopefo"
 with open('input/small.css', mode='r') as data:
     file_code=data.read()

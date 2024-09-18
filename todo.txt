@@ -1,0 +1,4 @@
+Fix objectToStyle function to work with new stylesToObject function go through the linked object and run mini tests using simple data then use same mechanism for objectToStyle function
+Note everything worked as Planned i just didn't have to update (styles variable) with (current variable)
+Make sytnax better
+Make formatNicely BETTER there is an indentation problem
