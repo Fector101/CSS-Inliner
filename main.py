@@ -199,28 +199,30 @@ def stylesToObject(code:str):
             # print(22222,styles)
             styles[selector]={}
             current = styles[selector]
-            print(1111,current)
-            # print(333333,current,styles)
+            # print(1111,current)
+            # print(333333,styles)
             found_selector_name_end=True
         elif char == '{' and found_selector_name_end:    # for animations and selctor with parent selector
             #FIX Fails to add children selectors properly when ';' is added to last style
             # found_styles=';'.join(style_des_name.split(';')[0:-1])  #returns -->> e.g color: red; display: flex; and takes out h1
             # styles[selector][style_des_name]=found_styles
             #ADD a way to if fallback user those not close with semi-colomun before child selector
-            print(2222,styles,'||||',current)
+            print(2222,current,'||||',styles)
             print(style_des_name)
             new_selector=style_des_name
             # styles[selector][new_selector]={}
             # children_selectors_and_their_childern.append(new_selector)
             current[new_selector]={}
-            print(555555555,styles,'||||',current)
+            # print(555555555,'||||',styles)
 
-            current = current[new_selector]
+            # current = current[new_selector]
+            # styles[selector] = current
+
             # print(styles)
             style_des_value=''
             style_des_name=''
             found_a_style_name_end=False
-            print(3333,styles)
+            print(3333,current,'----',styles)
 
         elif found_selector_name_end and not found_a_style_name_end and char not in [':','}']: # added (and each != ':') to move (elif found_a_style_name_start and each == ':':) section after this elif statement:
             style_des_name+=char
@@ -238,9 +240,14 @@ def stylesToObject(code:str):
                 # styles[selector][new_selector][style_des_name]=style_des_value
                 # for sub_selector in children_selectors_and_their_childern:
                     # styles[selector][sub_selector]
-                current[style_des_name]=style_des_value
+                print('suppose to assigns style value to subs here',style_des_name,'|||||',style_des_value)
+                print('stuffffff',current,selector,new_selector)
+                # current=style_des_value
+                current[new_selector][style_des_name]=style_des_value
             else:
+                print(777,styles)
                 styles[selector][style_des_name]=style_des_value
+                print(888,styles)
             style_des_name= style_des_value=''
             if char=='}':
                 # print(111111,styles)
@@ -257,6 +264,7 @@ def stylesToObject(code:str):
     # print(styles['.search-box:has(input:focus)'].keys())
     for e in styles.keys():
           print(e)
+    print('\n',styles['.search-box:has(input:focus)'].keys())
     return styles
 stylesToObject(CODE)
 runtime=300
