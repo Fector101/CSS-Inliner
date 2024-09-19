@@ -1,3 +1,4 @@
+By 8pm change cv-upgrade repo code and make it responsive should be easy to do, i wrote the code years back 🙃 and maybe add some more experience stuff
 Fix objectToStyle function to work with new stylesToObject function go through the linked object and run mini tests using simple data then use same mechanism for objectToStyle function
 Note everything worked as Planned i just didn't have to update (styles variable) with (current variable)
 Make sytnax better
